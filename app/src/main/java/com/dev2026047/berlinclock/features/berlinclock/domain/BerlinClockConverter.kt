@@ -8,6 +8,7 @@ class BerlinClockConverter {
         return BerlinClockState(
             isSecondsLampOn = time.seconds % 2 == 0,
             fiveHoursLampOnCount = time.hours / 5,
+            oneHoursLampOnCount = time.hours % 5,
         )
     }
 }
