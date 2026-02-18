@@ -5,4 +5,5 @@ data class BerlinClockState(
     val fiveHoursLampOnCount: Int,
     val oneHoursLampOnCount: Int,
     val fiveMinutesRow: List<FiveMinutesLampState>,
+    val oneMinutesRow: List<OneMinutesLampState>,
 )
