@@ -6,8 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import com.dev2026047.berlinclock.features.berlinclock.presentation.screen.BerlinClockScreen
+import com.dev2026047.berlinclock.shared.riverpod.ProviderScope
 import com.dev2026047.berlinclock.ui.theme.BerlinClockTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,12 +16,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            BerlinClockTheme {
-                Scaffold { innerPadding ->
-                    Text(
-                        text = "Berlin Clock",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            ProviderScope {
+                BerlinClockTheme {
+                    Scaffold { innerPadding ->
+                        BerlinClockScreen(modifier = Modifier.padding(innerPadding))
+                    }
                 }
             }
         }
