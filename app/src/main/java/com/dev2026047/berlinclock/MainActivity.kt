@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.dev2026047.berlinclock.features.berlinclock.presentation.screen.BerlinClockScreen
-import com.dev2026047.berlinclock.shared.riverpod.ProviderScope
 import com.dev2026047.berlinclock.ui.theme.BerlinClockTheme
 
 class MainActivity : ComponentActivity() {
@@ -16,11 +15,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ProviderScope {
-                BerlinClockTheme {
-                    Scaffold { innerPadding ->
-                        BerlinClockScreen(modifier = Modifier.padding(innerPadding))
-                    }
+            BerlinClockTheme {
+                Scaffold { innerPadding ->
+                    BerlinClockScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }

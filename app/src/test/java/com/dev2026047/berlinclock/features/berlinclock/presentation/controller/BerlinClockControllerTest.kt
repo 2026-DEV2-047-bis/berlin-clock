@@ -12,13 +12,14 @@ class BerlinClockControllerTest {
     @Test
     fun `initial state is midnight`() {
         val controller = BerlinClockController()
+        val state = controller.uiState.value
 
-        assertEquals(ClockTime(hours = 0, minutes = 0, seconds = 0), controller.state.time)
-        assertTrue(controller.state.clockState.isSecondsLampOn)
-        assertEquals(0, controller.state.clockState.fiveHoursLampOnCount)
-        assertEquals(0, controller.state.clockState.oneHoursLampOnCount)
-        assertEquals("00:00:00", controller.state.rawInput)
-        assertEquals(BerlinClockInputStatus.Valid, controller.state.status)
+        assertEquals(ClockTime(hours = 0, minutes = 0, seconds = 0), state.time)
+        assertTrue(state.clockState.isSecondsLampOn)
+        assertEquals(0, state.clockState.fiveHoursLampOnCount)
+        assertEquals(0, state.clockState.oneHoursLampOnCount)
+        assertEquals("00:00:00", state.rawInput)
+        assertEquals(BerlinClockInputStatus.Valid, state.status)
     }
 
     @Test
@@ -26,10 +27,11 @@ class BerlinClockControllerTest {
         val controller = BerlinClockController()
 
         controller.onInputChanged("13:17:01")
+        val state = controller.uiState.value
 
-        assertEquals("13:17:01", controller.state.rawInput)
-        assertEquals(BerlinClockInputStatus.Valid, controller.state.status)
-        assertEquals(ClockTime(hours = 0, minutes = 0, seconds = 0), controller.state.time)
+        assertEquals("13:17:01", state.rawInput)
+        assertEquals(BerlinClockInputStatus.Valid, state.status)
+        assertEquals(ClockTime(hours = 0, minutes = 0, seconds = 0), state.time)
     }
 
     @Test
@@ -38,14 +40,15 @@ class BerlinClockControllerTest {
 
         controller.onInputChanged("13:17:01")
         controller.onConvertRequested()
+        val state = controller.uiState.value
 
-        assertEquals(ClockTime(hours = 13, minutes = 17, seconds = 1), controller.state.time)
-        assertFalse(controller.state.clockState.isSecondsLampOn)
-        assertEquals(2, controller.state.clockState.fiveHoursLampOnCount)
-        assertEquals(3, controller.state.clockState.oneHoursLampOnCount)
-        assertEquals("13:17:01", controller.state.rawInput)
-        assertEquals(BerlinClockInputStatus.Valid, controller.state.status)
-        assertEquals(BerlinClockConverter().convert(ClockTime(13, 17, 1)), controller.state.clockState)
+        assertEquals(ClockTime(hours = 13, minutes = 17, seconds = 1), state.time)
+        assertFalse(state.clockState.isSecondsLampOn)
+        assertEquals(2, state.clockState.fiveHoursLampOnCount)
+        assertEquals(3, state.clockState.oneHoursLampOnCount)
+        assertEquals("13:17:01", state.rawInput)
+        assertEquals(BerlinClockInputStatus.Valid, state.status)
+        assertEquals(BerlinClockConverter().convert(ClockTime(13, 17, 1)), state.clockState)
     }
 
     @Test
@@ -55,14 +58,15 @@ class BerlinClockControllerTest {
 
         controller.onInputChanged("13-17-01")
         controller.onConvertRequested()
+        val state = controller.uiState.value
 
-        assertEquals(ClockTime(hours = 13, minutes = 17, seconds = 1), controller.state.time)
-        assertEquals("13-17-01", controller.state.rawInput)
+        assertEquals(ClockTime(hours = 13, minutes = 17, seconds = 1), state.time)
+        assertEquals("13-17-01", state.rawInput)
         assertEquals(
             BerlinClockInputStatus.Error("Use format HH:mm:ss"),
-            controller.state.status,
+            state.status,
         )
-        assertEquals(BerlinClockConverter().convert(ClockTime(13, 17, 1)), controller.state.clockState)
+        assertEquals(BerlinClockConverter().convert(ClockTime(13, 17, 1)), state.clockState)
     }
 
     @Test
@@ -72,14 +76,15 @@ class BerlinClockControllerTest {
 
         controller.onInputChanged("24:00:00")
         controller.onConvertRequested()
+        val state = controller.uiState.value
 
-        assertEquals(ClockTime(hours = 13, minutes = 17, seconds = 1), controller.state.time)
-        assertEquals("24:00:00", controller.state.rawInput)
+        assertEquals(ClockTime(hours = 13, minutes = 17, seconds = 1), state.time)
+        assertEquals("24:00:00", state.rawInput)
         assertEquals(
             BerlinClockInputStatus.Error("Time values out of range"),
-            controller.state.status,
+            state.status,
         )
-        assertEquals(BerlinClockConverter().convert(ClockTime(13, 17, 1)), controller.state.clockState)
+        assertEquals(BerlinClockConverter().convert(ClockTime(13, 17, 1)), state.clockState)
     }
 
     @Test
@@ -87,13 +92,14 @@ class BerlinClockControllerTest {
         val controller = BerlinClockController()
 
         controller.showSample(ClockTime(hours = 23, minutes = 59, seconds = 59))
+        val state = controller.uiState.value
 
-        assertEquals(ClockTime(hours = 23, minutes = 59, seconds = 59), controller.state.time)
-        assertFalse(controller.state.clockState.isSecondsLampOn)
-        assertEquals(4, controller.state.clockState.fiveHoursLampOnCount)
-        assertEquals(3, controller.state.clockState.oneHoursLampOnCount)
-        assertEquals("23:59:59", controller.state.rawInput)
-        assertEquals(BerlinClockInputStatus.Valid, controller.state.status)
-        assertEquals(BerlinClockConverter().convert(ClockTime(23, 59, 59)), controller.state.clockState)
+        assertEquals(ClockTime(hours = 23, minutes = 59, seconds = 59), state.time)
+        assertFalse(state.clockState.isSecondsLampOn)
+        assertEquals(4, state.clockState.fiveHoursLampOnCount)
+        assertEquals(3, state.clockState.oneHoursLampOnCount)
+        assertEquals("23:59:59", state.rawInput)
+        assertEquals(BerlinClockInputStatus.Valid, state.status)
+        assertEquals(BerlinClockConverter().convert(ClockTime(23, 59, 59)), state.clockState)
     }
 }

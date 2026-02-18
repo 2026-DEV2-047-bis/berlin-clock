@@ -22,6 +22,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +35,7 @@ import com.dev2026047.berlinclock.features.berlinclock.domain.model.BerlinClockS
 import com.dev2026047.berlinclock.features.berlinclock.domain.model.ClockTime
 import com.dev2026047.berlinclock.features.berlinclock.domain.model.FiveMinutesLampState
 import com.dev2026047.berlinclock.features.berlinclock.domain.model.OneMinutesLampState
-import com.dev2026047.berlinclock.features.berlinclock.presentation.controller.berlinClockControllerProvider
+import com.dev2026047.berlinclock.features.berlinclock.presentation.controller.BerlinClockController
 import com.dev2026047.berlinclock.features.berlinclock.presentation.state.BerlinClockInputStatus
 
 private val LampOff = Color(0xFFD9D9D9)
@@ -44,9 +46,11 @@ private val ScreenBackground = Color(0xFFF2F2F2)
 private val TextPrimary = Color(0xFF1A1A1A)
 
 @Composable
-fun BerlinClockScreen(modifier: Modifier = Modifier) {
-    val controller = berlinClockControllerProvider
-    val uiState = controller.state
+fun BerlinClockScreen(
+    modifier: Modifier = Modifier,
+    viewModel: BerlinClockController = viewModel(),
+) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     Column(
         modifier = modifier
@@ -63,9 +67,9 @@ fun BerlinClockScreen(modifier: Modifier = Modifier) {
         ControlsPanel(
             rawInput = uiState.rawInput,
             status = uiState.status,
-            onInputChanged = controller::onInputChanged,
-            onConvert = controller::onConvertRequested,
-            onSampleClick = controller::showSample,
+            onInputChanged = viewModel::onInputChanged,
+            onConvert = viewModel::onConvertRequested,
+            onSampleClick = viewModel::showSample,
             currentTimeLabel = formatTime(uiState.time),
         )
     }

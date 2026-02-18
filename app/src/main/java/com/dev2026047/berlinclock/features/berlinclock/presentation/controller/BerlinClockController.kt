@@ -1,35 +1,41 @@
 package com.dev2026047.berlinclock.features.berlinclock.presentation.controller
 
+import androidx.lifecycle.ViewModel
 import com.dev2026047.berlinclock.features.berlinclock.domain.BerlinClockConverter
 import com.dev2026047.berlinclock.features.berlinclock.domain.model.ClockTime
 import com.dev2026047.berlinclock.features.berlinclock.presentation.state.BerlinClockInputStatus
 import com.dev2026047.berlinclock.features.berlinclock.presentation.state.BerlinClockUiState
-import com.dev2026047.berlinclock.shared.riverpod.Notifier
-
-val berlinClockControllerProvider = BerlinClockController()
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class BerlinClockController(
     private val converter: BerlinClockConverter = BerlinClockConverter(),
-) : Notifier<BerlinClockUiState>(
-    initialState = BerlinClockUiState(
-        time = ClockTime(hours = 0, minutes = 0, seconds = 0),
-        clockState = converter.convert(ClockTime(hours = 0, minutes = 0, seconds = 0)),
-        rawInput = "00:00:00",
-        status = BerlinClockInputStatus.Valid,
-    ),
-) {
+) : ViewModel() {
     private companion object {
         const val FORMAT_ERROR = "Use format HH:mm:ss"
         const val RANGE_ERROR = "Time values out of range"
     }
 
+    private val _uiState = MutableStateFlow(
+        BerlinClockUiState(
+        time = ClockTime(hours = 0, minutes = 0, seconds = 0),
+        clockState = converter.convert(ClockTime(hours = 0, minutes = 0, seconds = 0)),
+        rawInput = "00:00:00",
+        status = BerlinClockInputStatus.Valid,
+    ))
+    val uiState: StateFlow<BerlinClockUiState> = _uiState.asStateFlow()
+
     fun setTime(time: ClockTime) {
-        state = BerlinClockUiState(
-            time = time,
-            clockState = converter.convert(time),
-            rawInput = formatTime(time),
-            status = BerlinClockInputStatus.Valid,
-        )
+        _uiState.update {
+            BerlinClockUiState(
+                time = time,
+                clockState = converter.convert(time),
+                rawInput = formatTime(time),
+                status = BerlinClockInputStatus.Valid,
+            )
+        }
     }
 
     fun showSample(time: ClockTime) {
@@ -37,21 +43,23 @@ class BerlinClockController(
     }
 
     fun onInputChanged(raw: String) {
-        state = state.copy(
-            rawInput = raw,
-            status = BerlinClockInputStatus.Valid,
-        )
+        _uiState.update {
+            it.copy(
+                rawInput = raw,
+                status = BerlinClockInputStatus.Valid,
+            )
+        }
     }
 
     fun onConvertRequested() {
-        when (val parseResult = parseTime(state.rawInput)) {
+        when (val parseResult = parseTime(_uiState.value.rawInput)) {
             is ParseResult.Success -> setTime(parseResult.time)
             is ParseResult.FormatError -> {
-                state = state.copy(status = BerlinClockInputStatus.Error(FORMAT_ERROR))
+                _uiState.update { it.copy(status = BerlinClockInputStatus.Error(FORMAT_ERROR)) }
             }
 
             is ParseResult.RangeError -> {
-                state = state.copy(status = BerlinClockInputStatus.Error(RANGE_ERROR))
+                _uiState.update { it.copy(status = BerlinClockInputStatus.Error(RANGE_ERROR)) }
             }
         }
     }
